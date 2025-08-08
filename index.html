@@ -138,42 +138,36 @@
         </div>
       </div>
 
-      
       <!-- Stats des gardiens -->
-      <div class="goalie-stats goalie-grid">
-        <div class="goalie-col">
-          <div class="goalie-team-title">Gardiens - <span id="team1GoalieTitle">Canadiens de Montréal</span></div>
-          <div class="goalie-container" id="team1Goalies"></div>
-        </div>
-        <div class="goalie-col">
-          <div class="goalie-team-title">Gardiens - <span id="team2GoalieTitle">Maple Leafs de Toronto</span></div>
-          <div class="goalie-container" id="team2Goalies"></div>
-        </div>
+      <div class="goalie-stats">
+        <div class="goalie-team-title">Gardiens - <span id="team1GoalieTitle">Canadiens de Montréal</span></div>
+        <div class="goalie-container" id="team1Goalies"></div>
+
+        <div class="goalie-team-title mt-6">Gardiens - <span id="team2GoalieTitle">Maple Leafs de Toronto</span></div>
+        <div class="goalie-container" id="team2Goalies"></div>
       </div>
 
-      </div>
+      
 <!-- Rink Section -->
     <div class="rink-section">
       <div class="rink-header">
         <div class="rink-title"><i class="fa-solid fa-map-location-dot"></i> Carte des tirs</div>
-        <button class="btn-secondary" id="clearRinkBtn"><i class="fa-solid fa-trash-can"></i> Effacer la carte</button>
+        <button class="btn-secondary" id="clearRinkBtn" onclick="clearRink()"><i class="fa-solid fa-trash-can"></i> Effacer la carte</button>
       </div>
-
-      <div class="shot-indicator" id="shotIndicator">Sélectionnez un type de tir puis cliquez sur la patinoire</div>
       
+      <div class="shot-indicator" id="shotIndicator">Sélectionnez un type de tir puis cliquez sur la patinoire</div>
       <div class="shot-controls">
-        <button class="btn-success shot-btn" id="goalBtn"><i class="fa-solid fa-bullseye"></i> But</button>
-        <button class="btn-primary shot-btn" id="onTargetBtn"><i class="fa-solid fa-circle-dot"></i> Tir cadré</button>
-        <button class="btn-secondary shot-btn" id="offTargetBtn"><i class="fa-solid fa-circle-xmark"></i> Tir non cadré</button>
-        <button class="btn-danger shot-btn" id="undoBtn"><i class="fa-solid fa-rotate-left"></i> Annuler dernier tir</button>
-        <button class="btn-secondary is-hidden" id="deselectBtn"><i class="fa-solid fa-xmark"></i> Désélectionner</button>
+        <button class="btn-success shot-btn" id="goalBtn" onclick="selectShotType(\'goal\')"><i class="fa-solid fa-bullseye"></i> But</button>
+        <button class="btn-primary shot-btn" id="onTargetBtn" onclick="selectShotType(\'onTarget\')"><i class="fa-solid fa-circle-dot"></i> Tir cadré</button>
+        <button class="btn-secondary shot-btn" id="offTargetBtn" onclick="selectShotType(\'offTarget\')"><i class="fa-solid fa-circle-xmark"></i> Tir non cadré</button>
+        <button class="btn-danger shot-btn" id="undoBtn" onclick="undoLastShot()"><i class="fa-solid fa-rotate-left"></i> Annuler dernier tir</button>
+        <button class="btn-secondary is-hidden" id="deselectBtn" onclick="deselectShotType()"><i class="fa-solid fa-xmark"></i> Désélectionner</button>
       </div>
-
-
-      <div class="rink-container">
+<div class="rink-container">
         <canvas id="rinkCanvas"></canvas>
       </div>
-
+      
+      
       <div class="line-switcher">
         <div class="line-switcher__group">
           <label for="team1LineSelect"><strong>Domicile</strong></label>
@@ -184,8 +178,7 @@
           <select id="team2LineSelect"></select>
         </div>
       </div>
-
-      <div class="legend">
+<div class="legend">
         <div class="legend-item"><div class="legend-color goal-color"></div><span>But</span></div>
         <div class="legend-item"><div class="legend-color on-target-color"></div><span>Tir cadré</span></div>
         <div class="legend-item"><div class="legend-color off-target-color"></div><span>Tir non cadré</span></div>
