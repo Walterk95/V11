@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionnaire de Stats Hockey</title>
+  <!-- CSP (idéalement via en-tête HTTP côté serveur) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'">
+  <!-- Font Awesome (CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fa-solid fa-hockey-puck logo"></i> Gestionnaire de Stats Hockey</h1>
+      <div class="row gap-3">
+        <button class="btn-secondary" id="resetBtn"><i class="fa-solid fa-rotate-right"></i> Réinitialiser</button>
+        <button class="btn-primary" id="saveBtn"><i class="fa-solid fa-floppy-disk"></i> Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- Timer Section -->
+    <div class="timer-section">
+      <div class="timer-display" id="timerDisplay">20:00</div>
+      <div class="period-info" id="periodInfo">Période 1 sur 3</div>
+      <div class="timer-controls">
+        <button class="btn-primary" id="timerBtn"><i class="fa-solid fa-play"></i> Démarrer</button>
+        <button class="btn-secondary" id="showTimeBtn"><i class="fa-solid fa-stopwatch"></i> Modifier</button>
+        <button class="btn-secondary" id="nextPeriodBtn"><i class="fa-solid fa-forward"></i> Période suivante</button>
+      </div>
+    </div>
+
+    <!-- Game Settings -->
+    <div class="settings-bar">
+      <div class="setting-group">
+        <label><i class="fa-solid fa-users"></i> Joueurs :</label>
+        <select id="playersOnIce">
+          <option value="3">3 contre 3</option>
+          <option value="4">4 contre 4</option>
+          <option value="5" selected>5 contre 5</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label><i class="fa-solid fa-ruler-combined"></i> Surface :</label>
+        <select id="rinkSize">
+          <option value="third">1/3 glace</option>
+          <option value="twothird">2/3 glace</option>
+          <option value="full" selected>Pleine glace</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label><i class="fa-solid fa-flag"></i> Périodes :</label>
+        <select id="periods">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label><i class="fa-solid fa-clock"></i> Durée (min) :</label>
+        <input type="number" id="periodLength" value="20" min="1" max="60" class="w-80">
+      </div>
+    </div>
+
+    <!-- Player Management Section -->
+    <div class="players-section">
+      <div class="players-header"><i class="fa-solid fa-user-group"></i> Gestion des Joueurs et Lignes</div>
+
+      <div class="team-players">
+        <div class="team-players-header">
+          <div class="team-players-title">Canadiens de Montréal</div>
+          <button class="btn-secondary" id="addPlayerTeam1"><i class="fa-solid fa-plus"></i> Ajouter joueur</button>
+        </div>
+        <div class="players-list" id="team1-players"></div>
+      </div>
+
+      <div class="team-players">
+        <div class="team-players-header">
+          <div class="team-players-title">Maple Leafs de Toronto</div>
+          <button class="btn-secondary" id="addPlayerTeam2"><i class="fa-solid fa-plus"></i> Ajouter joueur</button>
+        </div>
+        <div class="players-list" id="team2-players"></div>
+      </div>
+
+      <div class="lines-management">
+        <div class="lines-header">
+          <div class="players-header"><i class="fa-solid fa-users"></i> Composition des Lignes</div>
+          <button class="btn-primary" id="addLineBtn"><i class="fa-solid fa-plus"></i> Ajouter une ligne</button>
+        </div>
+        <div class="lines-container" id="lines-container"></div>
+      </div>
+    </div>
+
+    <!-- Teams Section -->
+    <div class="teams-section">
+      <div class="score-board">
+        <div class="score team1-score"><span id="team1Score">0</span> - <span id="team2Score">0</span></div>
+      </div>
+
+      <div class="teams-header">
+        <!-- Équipe Domicile -->
+        <div class="team-info domicile">
+          <input type="text" class="team-name-input" id="team1Name" placeholder="Nom équipe domicile" value="Canadiens de Montréal">
+          <div class="team-stats">
+            <div class="stat-box"><div class="stat-value" id="team1Shots">0</div><div class="stat-label">Tirs</div></div>
+            <div class="stat-box"><div class="stat-value" id="team1OnTarget">0</div><div class="stat-label">Cadrés</div></div>
+            <div class="stat-box"><div class="stat-value" id="team1Goals">0</div><div class="stat-label">Buts</div></div>
+            <div class="stat-box"><div class="stat-value small" id="team1ShotPercentage">0.0%</div><div class="stat-label">% Tirs cadrés</div></div>
+          </div>
+          <div class="mt-4 text-center">
+            <strong>Ligne sur la glace:</strong>
+            <div id="team1-current-line" class="mt-2 strong accent-text">-</div>
+            <div class="team-line-controls">
+              <button class="btn-secondary" id="team1PrevLine"><i class="fa-solid fa-arrow-left"></i> Préc.</button>
+              <button class="btn-secondary" id="team1NextLine">Suiv. <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Équipe Extérieure -->
+        <div class="team-info exterieure">
+          <input type="text" class="team-name-input" id="team2Name" placeholder="Nom équipe extérieure" value="Maple Leafs de Toronto">
+          <div class="team-stats">
+            <div class="stat-box"><div class="stat-value" id="team2Shots">0</div><div class="stat-label">Tirs</div></div>
+            <div class="stat-box"><div class="stat-value" id="team2OnTarget">0</div><div class="stat-label">Cadrés</div></div>
+            <div class="stat-box"><div class="stat-value" id="team2Goals">0</div><div class="stat-label">Buts</div></div>
+            <div class="stat-box"><div class="stat-value small" id="team2ShotPercentage">0.0%</div><div class="stat-label">% Tirs cadrés</div></div>
+          </div>
+          <div class="mt-4 text-center">
+            <strong>Ligne sur la glace:</strong>
+            <div id="team2-current-line" class="mt-2 strong accent-text">-</div>
+            <div class="team-line-controls">
+              <button class="btn-secondary" id="team2PrevLine"><i class="fa-solid fa-arrow-left"></i> Préc.</button>
+              <button class="btn-secondary" id="team2NextLine">Suiv. <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- Stats des gardiens -->
+      <div class="goalie-stats goalie-grid">
+        <div class="goalie-col">
+          <div class="goalie-team-title">Gardiens - <span id="team1GoalieTitle">Canadiens de Montréal</span></div>
+          <div class="goalie-container" id="team1Goalies"></div>
+        </div>
+        <div class="goalie-col">
+          <div class="goalie-team-title">Gardiens - <span id="team2GoalieTitle">Maple Leafs de Toronto</span></div>
+          <div class="goalie-container" id="team2Goalies"></div>
+        </div>
+      </div>
+
+      </div>
+<!-- Rink Section -->
+    <div class="rink-section">
+      <div class="rink-header">
+        <div class="rink-title"><i class="fa-solid fa-map-location-dot"></i> Carte des tirs</div>
+        <button class="btn-secondary" id="clearRinkBtn"><i class="fa-solid fa-trash-can"></i> Effacer la carte</button>
+      </div>
+
+      <div class="shot-indicator" id="shotIndicator">Sélectionnez un type de tir puis cliquez sur la patinoire</div>
+      
+      <div class="shot-controls">
+        <button class="btn-success shot-btn" id="goalBtn"><i class="fa-solid fa-bullseye"></i> But</button>
+        <button class="btn-primary shot-btn" id="onTargetBtn"><i class="fa-solid fa-circle-dot"></i> Tir cadré</button>
+        <button class="btn-secondary shot-btn" id="offTargetBtn"><i class="fa-solid fa-circle-xmark"></i> Tir non cadré</button>
+        <button class="btn-danger shot-btn" id="undoBtn"><i class="fa-solid fa-rotate-left"></i> Annuler dernier tir</button>
+        <button class="btn-secondary is-hidden" id="deselectBtn"><i class="fa-solid fa-xmark"></i> Désélectionner</button>
+      </div>
+
+
+      <div class="rink-container">
+        <canvas id="rinkCanvas"></canvas>
+      </div>
+
+      <div class="line-switcher">
+        <div class="line-switcher__group">
+          <label for="team1LineSelect"><strong>Domicile</strong></label>
+          <select id="team1LineSelect"></select>
+        </div>
+        <div class="line-switcher__group">
+          <label for="team2LineSelect"><strong>Extérieur</strong></label>
+          <select id="team2LineSelect"></select>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color goal-color"></div><span>But</span></div>
+        <div class="legend-item"><div class="legend-color on-target-color"></div><span>Tir cadré</span></div>
+        <div class="legend-item"><div class="legend-color off-target-color"></div><span>Tir non cadré</span></div>
+      </div>
+    </div>
+
+    <!-- Events Log -->
+    <div class="events-section">
+      <div class="events-header"><i class="fa-solid fa-list-ul"></i> Journal des Actions</div>
+      <div id="eventsList">
+        <div class="event-item">
+          <div class="event-time">00:00</div>
+          <div class="event-icon"><i class="fa-solid fa-play"></i></div>
+          <div>Début du match</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Time Modal -->
+    <div class="modal" id="timeModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Modifier le temps</h3>
+          <button class="btn-secondary btn-icon" id="closeTimeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="col gap-4">
+          <div>
+            <label class="block mb-2">Minutes:</label>
+            <input type="number" id="modalMinutes" min="0" max="60" class="w-100">
+          </div>
+          <div>
+            <label class="block mb-2">Secondes:</label>
+            <input type="number" id="modalSeconds" min="0" max="59" class="w-100">
+          </div>
+          <div class="row gap-4 end mt-4">
+            <button class="btn-secondary" id="cancelTimeBtn">Annuler</button>
+            <button class="btn-primary" id="confirmTimeBtn">Confirmer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div class="modal" id="playerModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="playerModalTitle">Ajouter un joueur</h3>
+          <button class="btn-secondary btn-icon" id="closePlayerModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="col gap-4">
+          <div>
+            <label class="block mb-2">Numéro:</label>
+            <input type="number" id="playerNumber" min="1" max="99" class="w-100">
+          </div>
+          <div>
+            <label class="block mb-2">Nom:</label>
+            <input type="text" id="playerName" class="w-100">
+          </div>
+          <div>
+            <label class="block mb-2">Position:</label>
+            <select id="playerPosition" class="w-100">
+              <option value="C">Centre (C)</option>
+              <option value="LW">Ailier gauche (LW)</option>
+              <option value="RW">Ailier droit (RW)</option>
+              <option value="LD">Défenseur gauche (LD)</option>
+              <option value="RD">Défenseur droit (RD)</option>
+              <option value="G">Gardien (G)</option>
+            </select>
+          </div>
+          <div class="row gap-4 end mt-4">
+            <button class="btn-secondary" id="cancelPlayerBtn">Annuler</button>
+            <button class="btn-primary" id="savePlayerBtn">Sauvegarder</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Modal -->
+    <div class="modal" id="lineModal">
+      <div class="modal-content modal-content--wide">
+        <div class="modal-header">
+          <h3 class="modal-title" id="lineModalTitle">Créer une ligne</h3>
+          <button class="btn-secondary btn-icon" id="closeLineModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="col gap-4">
+          <div>
+            <label class="block mb-2">Nom de la ligne:</label>
+            <input type="text" id="lineName" class="w-100" placeholder="ex: Ligne 1, Power Play, etc.">
+          </div>
+          <div>
+            <label class="block mb-2">Équipe:</label>
+            <select id="lineTeam" class="w-100">
+              <option value="1">Canadiens de Montréal</option>
+              <option value="2">Maple Leafs de Toronto</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2">Joueurs (sélectionnez jusqu'à 6 joueurs):</label>
+            <div class="col gap-4">
+              <div id="linePlayerOptions" class="scroll-pane"></div>
+              <div id="selectedPlayersPreview" class="selected-preview">
+                <div class="selected-preview__title">Joueurs sélectionnés (<span id="selectedCount">0</span>/6):</div>
+                <div id="selectedPlayersList" class="row wrap gap-2">
+                  <span class="text-dim italic">Aucun joueur sélectionné</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row gap-4 end mt-4">
+            <button class="btn-secondary" id="cancelLineBtn">Annuler</button>
+            <button class="btn-primary" id="saveLineBtn">Créer la ligne</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+      <div class="toast-icon"><i class="fa-solid fa-check"></i></div>
+      <div id="toastMessage">Action effectuée avec succès</div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
